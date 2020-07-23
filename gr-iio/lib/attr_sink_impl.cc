@@ -97,7 +97,7 @@ attr_sink_impl::attr_sink_impl(const std::string& uri,
 
     message_port_register_in(pmt::mp("attr"));
     set_msg_handler(pmt::mp("attr"),
-                    boost::bind(&attr_sink_impl::write_attribute, this, _1));
+                    [this](pmt::pmt_t pdu) { this->write_attribute(pdu); });
 }
 
 /*

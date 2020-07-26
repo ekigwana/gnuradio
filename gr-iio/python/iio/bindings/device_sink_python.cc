@@ -30,7 +30,7 @@ namespace py = pybind11;
 void bind_device_sink(py::module& m)
 {
 
-    using device_sink    = gr::iio::device_sink;
+    using device_sink = gr::iio::device_sink;
 
 
     py::class_<device_sink,
@@ -40,15 +40,15 @@ void bind_device_sink(py::module& m)
                std::shared_ptr<device_sink>>(m, "device_sink", D(device_sink))
 
         .def(py::init(&device_sink::make),
-           py::arg("uri"),
-           py::arg("device"),
-           py::arg("channels"),
-           py::arg("device_phy"),
-           py::arg("params"),
-           py::arg("buffer_size") =  DEFAULT_BUFFER_SIZE,
-           py::arg("interpolation") =  0,
-           py::arg("cyclic") =  false,
-           D(device_sink,make))
+             py::arg("uri"),
+             py::arg("device"),
+             py::arg("channels"),
+             py::arg("device_phy"),
+             py::arg("params"),
+             py::arg("buffer_size") = DEFAULT_BUFFER_SIZE,
+             py::arg("interpolation") = 0,
+             py::arg("cyclic") = false,
+             D(device_sink, make))
 
         ;
 }

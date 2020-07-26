@@ -30,7 +30,7 @@ namespace py = pybind11;
 void bind_attr_updater(py::module& m)
 {
 
-    using attr_updater    = gr::iio::attr_updater;
+    using attr_updater = gr::iio::attr_updater;
 
 
     py::class_<attr_updater,
@@ -39,10 +39,10 @@ void bind_attr_updater(py::module& m)
                std::shared_ptr<attr_updater>>(m, "attr_updater", D(attr_updater))
 
         .def(py::init(&attr_updater::make),
-           py::arg("attribute"),
-           py::arg("value"),
-           py::arg("interval_ms"),
-           D(attr_updater,make))
+             py::arg("attribute"),
+             py::arg("value"),
+             py::arg("interval_ms"),
+             D(attr_updater, make))
 
         ;
 }

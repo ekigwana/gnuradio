@@ -30,7 +30,7 @@ namespace py = pybind11;
 void bind_fmcomms5_sink_f32c(py::module& m)
 {
 
-    using fmcomms5_sink_f32c    = gr::iio::fmcomms5_sink_f32c;
+    using fmcomms5_sink_f32c = gr::iio::fmcomms5_sink_f32c;
 
 
     py::class_<fmcomms5_sink_f32c,
@@ -39,27 +39,27 @@ void bind_fmcomms5_sink_f32c(py::module& m)
                std::shared_ptr<fmcomms5_sink_f32c>>(m, "fmcomms5_sink_f32c", D(fmcomms5_sink_f32c))
 
         .def(py::init(&fmcomms5_sink_f32c::make),
-           py::arg("uri"),
-           py::arg("longfrequency1"),
-           py::arg("longfrequency2"),
-           py::arg("samplerate"),
-           py::arg("bandwidth"),
-           py::arg("tx1_en"),
-           py::arg("tx2_en"),
-           py::arg("tx3_en"),
-           py::arg("tx4_en"),
-           py::arg("buffer_size"),
-           py::arg("cyclic"),
-           py::arg("rf_port_select"),
-           py::arg("attenuation1"),
-           py::arg("attenuation2"),
-           py::arg("attenuation3"),
-           py::arg("attenuation4"),
-           py::arg("filter_source") =  "",
-           py::arg("filter_filename") =  "",
-           py::arg("Fpass") =  0.0,
-           py::arg("Fstop") =  0.0,
-           D(fmcomms5_sink_f32c,make))
+             py::arg("uri"),
+             py::arg("longfrequency1"),
+             py::arg("longfrequency2"),
+             py::arg("samplerate"),
+             py::arg("bandwidth"),
+             py::arg("tx1_en"),
+             py::arg("tx2_en"),
+             py::arg("tx3_en"),
+             py::arg("tx4_en"),
+             py::arg("buffer_size"),
+             py::arg("cyclic"),
+             py::arg("rf_port_select"),
+             py::arg("attenuation1"),
+             py::arg("attenuation2"),
+             py::arg("attenuation3"),
+             py::arg("attenuation4"),
+             py::arg("filter_source") = "",
+             py::arg("filter_filename") = "",
+             py::arg("Fpass") = 0.0,
+             py::arg("Fstop") = 0.0,
+             D(fmcomms5_sink_f32c, make))
 
         ;
 }

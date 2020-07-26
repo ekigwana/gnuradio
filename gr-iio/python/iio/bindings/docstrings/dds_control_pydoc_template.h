@@ -15,13 +15,7 @@
  */
 
 
- 
- static const char *__doc_gr_iio_dds_control = R"doc()doc";
+static const char *__doc_gr_iio_dds_control = R"doc()doc";
 
+static const char *__doc_gr_iio_dds_control_make = R"doc()doc";
 
- static const char *__doc_gr_iio_dds_control_dds_control = R"doc()doc";
-
-
- static const char *__doc_gr_iio_dds_control_make = R"doc()doc";
-
-  

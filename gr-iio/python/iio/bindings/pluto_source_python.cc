@@ -30,28 +30,28 @@ namespace py = pybind11;
 void bind_pluto_source(py::module& m)
 {
 
-    using pluto_source    = gr::iio::pluto_source;
+    using pluto_source = gr::iio::pluto_source;
 
 
     py::class_<pluto_source,
         std::shared_ptr<pluto_source>>(m, "pluto_source", D(pluto_source))
 
         .def(py::init(&pluto_source::make),
-           py::arg("uri"),
-           py::arg("longfrequency"),
-           py::arg("samplerate"),
-           py::arg("bandwidth"),
-           py::arg("buffer_size"),
-           py::arg("quadrature"),
-           py::arg("rfdc"),
-           py::arg("bbdc"),
-           py::arg("gain"),
-           py::arg("gain_value"),
-           py::arg("filter_source") =  "",
-           py::arg("filter_filename") =  "",
-           py::arg("Fpass") =  0.0,
-           py::arg("Fstop") =  0.0,
-           D(pluto_source,make))
+             py::arg("uri"),
+             py::arg("longfrequency"),
+             py::arg("samplerate"),
+             py::arg("bandwidth"),
+             py::arg("buffer_size"),
+             py::arg("quadrature"),
+             py::arg("rfdc"),
+             py::arg("bbdc"),
+             py::arg("gain"),
+             py::arg("gain_value"),
+             py::arg("filter_source") = "",
+             py::arg("filter_filename") = "",
+             py::arg("Fpass") = 0.0,
+             py::arg("Fstop") = 0.0,
+             D(pluto_source, make))
 
         ;
 }

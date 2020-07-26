@@ -30,7 +30,7 @@ namespace py = pybind11;
 void bind_attr_source(py::module& m)
 {
 
-    using attr_source    = gr::iio::attr_source;
+    using attr_source = gr::iio::attr_source;
 
 
     py::class_<attr_source,
@@ -40,18 +40,18 @@ void bind_attr_source(py::module& m)
                std::shared_ptr<attr_source>>(m, "attr_source", D(attr_source))
 
         .def(py::init(&attr_source::make),
-           py::arg("uri"),
-           py::arg("device"),
-           py::arg("channel"),
-           py::arg("attribute"),
-           py::arg("update_interval_ms"),
-           py::arg("samples_per_update"),
-           py::arg("data_type"),
-           py::arg("attr_type"),
-           py::arg("output"),
-           py::arg("address"),
-           py::arg("required_enable"),
-           D(attr_source,make))
+             py::arg("uri"),
+             py::arg("device"),
+             py::arg("channel"),
+             py::arg("attribute"),
+             py::arg("update_interval_ms"),
+             py::arg("samples_per_update"),
+             py::arg("data_type"),
+             py::arg("attr_type"),
+             py::arg("output"),
+             py::arg("address"),
+             py::arg("required_enable"),
+             D(attr_source, make))
 
         ;
 }

@@ -14,11 +14,7 @@
   and will be overwritten during the build process
  */
 
+static const char *__doc_gr_iio_fmcomms2_source = R"doc()doc";
 
- 
- static const char *__doc_gr_iio_fmcomms2_source = R"doc()doc";
+static const char *__doc_gr_iio_fmcomms2_source_make = R"doc()doc";
 
-
- static const char *__doc_gr_iio_fmcomms2_source_make = R"doc()doc";
-
-  

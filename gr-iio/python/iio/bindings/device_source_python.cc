@@ -30,7 +30,7 @@ namespace py = pybind11;
 void bind_device_source(py::module& m)
 {
 
-    using device_source    = gr::iio::device_source;
+    using device_source = gr::iio::device_source;
 
 
     py::class_<device_source,
@@ -40,14 +40,14 @@ void bind_device_source(py::module& m)
                std::shared_ptr<device_source>>(m, "device_source", D(device_source))
 
         .def(py::init(&device_source::make),
-           py::arg("uri"),
-           py::arg("device"),
-           py::arg("channels"),
-           py::arg("device_phy"),
-           py::arg("params"),
-           py::arg("buffer_size") =  DEFAULT_BUFFER_SIZE,
-           py::arg("decimation") =  0,
-           D(device_source,make))
+             py::arg("uri"),
+             py::arg("device"),
+             py::arg("channels"),
+             py::arg("device_phy"),
+             py::arg("params"),
+             py::arg("buffer_size") = DEFAULT_BUFFER_SIZE,
+             py::arg("decimation") = 0,
+             D(device_source, make))
 
         ;
 }

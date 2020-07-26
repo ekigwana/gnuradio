@@ -30,25 +30,25 @@ namespace py = pybind11;
 void bind_pluto_sink(py::module& m)
 {
 
-    using pluto_sink    = gr::iio::pluto_sink;
+    using pluto_sink = gr::iio::pluto_sink;
 
 
     py::class_<pluto_sink,
         std::shared_ptr<pluto_sink>>(m, "pluto_sink", D(pluto_sink))
 
         .def(py::init(&pluto_sink::make),
-           py::arg("uri"),
-           py::arg("longfrequency"),
-           py::arg("samplerate"),
-           py::arg("bandwidth"),
-           py::arg("buffer_size"),
-           py::arg("cyclic"),
-           py::arg("attenuation"),
-           py::arg("filter_source") =  "",
-           py::arg("filter_filename") =  "",
-           py::arg("Fpass") =  0.0,
-           py::arg("Fstop") =  0.0,
-           D(pluto_sink,make))
+             py::arg("uri"),
+             py::arg("longfrequency"),
+             py::arg("samplerate"),
+             py::arg("bandwidth"),
+             py::arg("buffer_size"),
+             py::arg("cyclic"),
+             py::arg("attenuation"),
+             py::arg("filter_source") = "",
+             py::arg("filter_filename") = "",
+             py::arg("Fpass") = 0.0,
+             py::arg("Fstop") = 0.0,
+             D(pluto_sink, make))
 
         ;
 }

@@ -30,7 +30,7 @@ namespace py = pybind11;
 void bind_dds_control(py::module& m)
 {
 
-    using dds_control    = gr::iio::dds_control;
+    using dds_control = gr::iio::dds_control;
 
 
     py::class_<dds_control,
@@ -39,12 +39,12 @@ void bind_dds_control(py::module& m)
                std::shared_ptr<dds_control>>(m, "dds_control", D(dds_control))
 
         .def(py::init(&dds_control::make),
-           py::arg("uri"),
-           py::arg("enabled"),
-           py::arg("frequencies"),
-           py::arg("phases"),
-           py::arg("scales"),
-           D(dds_control,make))
+             py::arg("uri"),
+             py::arg("enabled"),
+             py::arg("frequencies"),
+             py::arg("phases"),
+             py::arg("scales"),
+             D(dds_control, make))
 
         ;
 }

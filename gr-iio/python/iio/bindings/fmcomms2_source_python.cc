@@ -30,7 +30,7 @@ namespace py = pybind11;
 void bind_fmcomms2_source(py::module& m)
 {
 
-    using fmcomms2_source    = gr::iio::fmcomms2_source;
+    using fmcomms2_source = gr::iio::fmcomms2_source;
 
 
     py::class_<fmcomms2_source,
@@ -40,28 +40,28 @@ void bind_fmcomms2_source(py::module& m)
                std::shared_ptr<fmcomms2_source>>(m, "fmcomms2_source", D(fmcomms2_source))
 
         .def(py::init(&fmcomms2_source::make),
-           py::arg("uri"),
-           py::arg("longfrequency"),
-           py::arg("samplerate"),
-           py::arg("bandwidth"),
-           py::arg("ch1_en"),
-           py::arg("ch2_en"),
-           py::arg("ch3_en"),
-           py::arg("ch4_en"),
-           py::arg("buffer_size"),
-           py::arg("quadrature"),
-           py::arg("rfdc"),
-           py::arg("bbdc"),
-           py::arg("gain1"),
-           py::arg("gain1_value"),
-           py::arg("gain2"),
-           py::arg("gain2_value"),
-           py::arg("rf_port_select"),
-           py::arg("filter_source") =  "",
-           py::arg("filter_filename") =  "",
-           py::arg("Fpass") =  0.0,
-           py::arg("Fstop") =  0.0,
-           D(fmcomms2_source,make))
+             py::arg("uri"),
+             py::arg("longfrequency"),
+             py::arg("samplerate"),
+             py::arg("bandwidth"),
+             py::arg("ch1_en"),
+             py::arg("ch2_en"),
+             py::arg("ch3_en"),
+             py::arg("ch4_en"),
+             py::arg("buffer_size"),
+             py::arg("quadrature"),
+             py::arg("rfdc"),
+             py::arg("bbdc"),
+             py::arg("gain1"),
+             py::arg("gain1_value"),
+             py::arg("gain2"),
+             py::arg("gain2_value"),
+             py::arg("rf_port_select"),
+             py::arg("filter_source") = "",
+             py::arg("filter_filename") = "",
+             py::arg("Fpass") = 0.0,
+             py::arg("Fstop") = 0.0,
+             D(fmcomms2_source, make))
 
         ;
 }

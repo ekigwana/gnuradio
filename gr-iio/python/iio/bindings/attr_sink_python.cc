@@ -30,7 +30,7 @@ namespace py = pybind11;
 void bind_attr_sink(py::module& m)
 {
 
-    using attr_sink    = gr::iio::attr_sink;
+    using attr_sink = gr::iio::attr_sink;
 
 
     py::class_<attr_sink,
@@ -39,13 +39,13 @@ void bind_attr_sink(py::module& m)
                std::shared_ptr<attr_sink>>(m, "attr_sink", D(attr_sink))
 
         .def(py::init(&attr_sink::make),
-           py::arg("uri"),
-           py::arg("device"),
-           py::arg("channel"),
-           py::arg("type"),
-           py::arg("output"),
-           py::arg("required_enable"),
-           D(attr_sink,make))
+             py::arg("uri"),
+             py::arg("device"),
+             py::arg("channel"),
+             py::arg("type"),
+             py::arg("output"),
+             py::arg("required_enable"),
+             D(attr_sink, make))
 
         ;
 }

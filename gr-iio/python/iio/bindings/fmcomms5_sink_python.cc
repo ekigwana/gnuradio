@@ -30,7 +30,7 @@ namespace py = pybind11;
 void bind_fmcomms5_sink(py::module& m)
 {
 
-    using fmcomms5_sink    = gr::iio::fmcomms5_sink;
+    using fmcomms5_sink = gr::iio::fmcomms5_sink;
 
 
     py::class_<fmcomms5_sink,
@@ -40,31 +40,31 @@ void bind_fmcomms5_sink(py::module& m)
                std::shared_ptr<fmcomms5_sink>>(m, "fmcomms5_sink", D(fmcomms5_sink))
 
         .def(py::init(&fmcomms5_sink::make),
-           py::arg("uri"),
-           py::arg("longfrequency1"),
-           py::arg("longfrequency2"),
-           py::arg("samplerate"),
-           py::arg("bandwidth"),
-           py::arg("ch1_en"),
-           py::arg("ch2_en"),
-           py::arg("ch3_en"),
-           py::arg("ch4_en"),
-           py::arg("ch5_en"),
-           py::arg("ch6_en"),
-           py::arg("ch7_en"),
-           py::arg("ch8_en"),
-           py::arg("buffer_size"),
-           py::arg("cyclic"),
-           py::arg("rf_port_select"),
-           py::arg("attenuation1"),
-           py::arg("attenuation2"),
-           py::arg("attenuation3"),
-           py::arg("attenuation4"),
-           py::arg("filter_source") =  "",
-           py::arg("filter_filename") =  "",
-           py::arg("Fpass") =  0.0,
-           py::arg("Fstop") =  0.0,
-           D(fmcomms5_sink,make))
+             py::arg("uri"),
+             py::arg("longfrequency1"),
+             py::arg("longfrequency2"),
+             py::arg("samplerate"),
+             py::arg("bandwidth"),
+             py::arg("ch1_en"),
+             py::arg("ch2_en"),
+             py::arg("ch3_en"),
+             py::arg("ch4_en"),
+             py::arg("ch5_en"),
+             py::arg("ch6_en"),
+             py::arg("ch7_en"),
+             py::arg("ch8_en"),
+             py::arg("buffer_size"),
+             py::arg("cyclic"),
+             py::arg("rf_port_select"),
+             py::arg("attenuation1"),
+             py::arg("attenuation2"),
+             py::arg("attenuation3"),
+             py::arg("attenuation4"),
+             py::arg("filter_source") = "",
+             py::arg("filter_filename") = "",
+             py::arg("Fpass") = 0.0,
+             py::arg("Fstop") = 0.0,
+             D(fmcomms5_sink, make))
 
         ;
 }

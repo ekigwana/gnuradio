@@ -18,3 +18,4 @@ static const char *__doc_gr_iio_pluto_sink = R"doc()doc";
 
 static const char *__doc_gr_iio_pluto_sink_make = R"doc()doc";
 
+static const char *__doc_gr_iio_pluto_sink_set_params = R"doc()doc";

@@ -59,5 +59,19 @@ void bind_fmcomms2_sink(py::module& m)
              py::arg("Fstop") = 0.0,
              D(fmcomms2_sink, make))
 
+        .def("set_params",
+             &fmcomms2_sink::set_params,
+             py::arg("longfrequency"),
+             py::arg("samplerate"),
+             py::arg("bandwidth"),
+             py::arg("rf_port_select"),
+             py::arg("attenuation1"),
+             py::arg("attenuation2"),
+             py::arg("filter_source") = "",
+             py::arg("filter_filename") = "",
+             py::arg("Fpass") = 0.0,
+             py::arg("Fstop") = 0.0,
+             D(fmcomms2_sink, set_params))
+
         ;
 }

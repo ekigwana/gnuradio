@@ -53,5 +53,21 @@ void bind_pluto_source(py::module& m)
              py::arg("Fstop") = 0.0,
              D(pluto_source, make))
 
+        .def("set_params",
+             &pluto_source::set_params,
+             py::arg("longfrequency"),
+             py::arg("samplerate"),
+             py::arg("bandwidth"),
+             py::arg("quadrature"),
+             py::arg("rfdc"),
+             py::arg("bbdc"),
+             py::arg("gain"),
+             py::arg("gain_value"),
+             py::arg("filter_source") = "",
+             py::arg("filter_filename") = "",
+             py::arg("Fpass") = 0.0,
+             py::arg("Fstop") = 0.0,
+             D(pluto_source, set_params))
+
         ;
 }

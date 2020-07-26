@@ -50,5 +50,17 @@ void bind_pluto_sink(py::module& m)
              py::arg("Fstop") = 0.0,
              D(pluto_sink, make))
 
+        .def("set_params",
+             &pluto_sink::set_params,
+             py::arg("longfrequency"),
+             py::arg("samplerate"),
+             py::arg("bandwidth"),
+             py::arg("attenuation"),
+             py::arg("filter_source") = "",
+             py::arg("filter_filename") = "",
+             py::arg("Fpass") = 0.0,
+             py::arg("Fstop") = 0.0,
+             D(pluto_sink, set_params))
+
         ;
 }

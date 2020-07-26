@@ -18,3 +18,4 @@ static const char *__doc_gr_iio_fmcomms5_source = R"doc()doc";
 
 static const char *__doc_gr_iio_fmcomms5_source_make = R"doc()doc";
 
+static const char *__doc_gr_iio_fmcomms5_source_set_params = R"doc()doc";

@@ -46,5 +46,12 @@ void bind_dds_control(py::module& m)
              py::arg("scales"),
              D(dds_control, make))
 
+        .def("set_dds_confg",
+             &dds_control::set_dds_confg,
+             py::arg("frequencies"),
+             py::arg("phases"),
+             py::arg("scales"),
+             D(dds_control, set_dds_confg))
+
         ;
 }

@@ -67,5 +67,29 @@ void bind_fmcomms5_source_f32c(py::module& m)
              py::arg("Fstop") = 0.0,
              D(fmcomms5_source_f32c, make))
 
+        .def("set_params",
+             &fmcomms5_source_f32c::set_params,
+             py::arg("longfrequency1"),
+             py::arg("longfrequency2"),
+             py::arg("samplerate"),
+             py::arg("bandwidth"),
+             py::arg("quadrature"),
+             py::arg("rfdc"),
+             py::arg("bbdc"),
+             py::arg("gain1"),
+             py::arg("gain1_value"),
+             py::arg("gain2"),
+             py::arg("gain2_value"),
+             py::arg("gain3"),
+             py::arg("gain3_value"),
+             py::arg("gain4"),
+             py::arg("gain4_value"),
+             py::arg("rf_port_select"),
+             py::arg("filter_source") =  "",
+             py::arg("filter_filename") =  "",
+             py::arg("Fpass") = 0.0,
+             py::arg("Fstop") = 0.0,
+             D(fmcomms5_source_f32c, set_params))
+
         ;
 }

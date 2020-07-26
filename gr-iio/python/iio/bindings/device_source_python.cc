@@ -49,5 +49,15 @@ void bind_device_source(py::module& m)
              py::arg("decimation") = 0,
              D(device_source, make))
 
+        .def("set_buffer_size",
+             &device_source::set_buffer_size,
+             py::arg("buffer_size") = DEFAULT_BUFFER_SIZE,
+             D(device_source, set_buffer_size))
+
+        .def("set_timeout_ms",
+             &device_source::set_timeout_ms,
+             py::arg("timeout"),
+             D(device_source, set_timeout_ms))
+
         ;
 }

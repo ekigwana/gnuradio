@@ -18,4 +18,6 @@ static const char *__doc_gr_iio_device_source = R"doc()doc";
 
 static const char *__doc_gr_iio_device_source_make = R"doc()doc";
 
+static const char *__doc_gr_iio_device_source_set_buffer_size = R"doc()doc";
 
+static const char *__doc_gr_iio_device_source_set_timeout_ms = R"doc()doc";

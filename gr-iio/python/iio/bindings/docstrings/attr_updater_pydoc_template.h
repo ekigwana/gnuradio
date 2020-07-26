@@ -18,3 +18,4 @@ static const char *__doc_gr_iio_attr_updater = R"doc()doc";
 
 static const char *__doc_gr_iio_attr_updater_make = R"doc()doc";
 
+static const char *__doc_gr_iio_attr_set_value = R"doc()doc";

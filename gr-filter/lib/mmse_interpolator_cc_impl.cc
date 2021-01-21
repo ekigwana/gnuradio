@@ -22,8 +22,8 @@ namespace filter {
 mmse_interpolator_cc::sptr mmse_interpolator_cc::make(float phase_shift,
                                                       float interp_ratio)
 {
-    return gnuradio::get_initial_sptr(
-        new mmse_interpolator_cc_impl(phase_shift, interp_ratio));
+    return gnuradio::make_block_sptr<mmse_interpolator_cc_impl>(phase_shift,
+                                                                interp_ratio);
 }
 
 mmse_interpolator_cc_impl::mmse_interpolator_cc_impl(float phase_shift,
@@ -44,8 +44,6 @@ mmse_interpolator_cc_impl::mmse_interpolator_cc_impl(float phase_shift,
 
     set_inverse_relative_rate(d_mu_inc);
 }
-
-mmse_interpolator_cc_impl::~mmse_interpolator_cc_impl() {}
 
 void mmse_interpolator_cc_impl::forecast(int noutput_items,
                                          gr_vector_int& ninput_items_required)

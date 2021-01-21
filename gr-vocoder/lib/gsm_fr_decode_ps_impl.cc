@@ -15,7 +15,7 @@
 #define GSM_SAMPLES_PER_FRAME 160
 #include "gsm_fr_decode_ps_impl.h"
 #include <gnuradio/io_signature.h>
-#include <assert.h>
+#include <cassert>
 #include <stdexcept>
 
 namespace gr {
@@ -23,7 +23,7 @@ namespace vocoder {
 
 gsm_fr_decode_ps::sptr gsm_fr_decode_ps::make()
 {
-    return gnuradio::get_initial_sptr(new gsm_fr_decode_ps_impl());
+    return gnuradio::make_block_sptr<gsm_fr_decode_ps_impl>();
 }
 
 gsm_fr_decode_ps_impl::gsm_fr_decode_ps_impl()

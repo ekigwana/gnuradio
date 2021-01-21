@@ -12,9 +12,9 @@
 #include "config.h"
 #endif
 
-#include <assert.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <cassert>
 #include <stdexcept>
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -24,9 +24,9 @@
 #endif
 #include "pagesize.h"
 #include "vmcircbuf_createfilemapping.h"
-#include <errno.h>
-#include <stdio.h>
 #include <boost/format.hpp>
+#include <cerrno>
+#include <cstdio>
 
 namespace gr {
 
@@ -46,7 +46,7 @@ static void werror(char* where, DWORD last_error)
                   buf,
                   sizeof(buf) / sizeof(TCHAR), // buffer size
                   NULL);
-    GR_LOG_ERROR(logger, boost::format("%s: Error %d: %s" % where % last_error % buf));
+    GR_LOG_ERROR(logger, boost::format("%s: Error %d: %s") % where % last_error % buf);
     return;
 }
 #endif

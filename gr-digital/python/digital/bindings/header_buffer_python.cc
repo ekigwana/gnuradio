@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(header_buffer.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(cb0f4b24d7fa8f9c23b864584c361e11)                     */
+/* BINDTOOL_HEADER_FILE_HASH(22afb7f4d4128f03a2a8f67f1e6ea6e0)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,7 +37,7 @@ void bind_header_buffer(py::module& m)
         m, "header_buffer", D(header_buffer))
 
         .def(py::init<uint8_t*>(),
-             py::arg("buffer") = __null,
+             py::arg("buffer") = nullptr,
              D(header_buffer, header_buffer, 0))
         .def(py::init<gr::digital::header_buffer const&>(),
              py::arg("arg0"),

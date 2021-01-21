@@ -14,7 +14,7 @@
 
 #include "annotator_alltoall_impl.h"
 #include <gnuradio/io_signature.h>
-#include <string.h>
+#include <cstring>
 #include <iomanip>
 #include <iostream>
 
@@ -23,8 +23,7 @@ namespace blocks {
 
 annotator_alltoall::sptr annotator_alltoall::make(int when, size_t sizeof_stream_item)
 {
-    return gnuradio::get_initial_sptr(
-        new annotator_alltoall_impl(when, sizeof_stream_item));
+    return gnuradio::make_block_sptr<annotator_alltoall_impl>(when, sizeof_stream_item);
 }
 
 annotator_alltoall_impl::annotator_alltoall_impl(int when, size_t sizeof_stream_item)

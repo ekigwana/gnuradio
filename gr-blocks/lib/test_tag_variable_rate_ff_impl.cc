@@ -15,8 +15,8 @@
 #include "test_tag_variable_rate_ff_impl.h"
 #include <gnuradio/io_signature.h>
 #include <gnuradio/xoroshiro128p.h>
-#include <stdint.h>
-#include <string.h>
+#include <cstdint>
+#include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
@@ -29,8 +29,8 @@ namespace blocks {
 test_tag_variable_rate_ff::sptr test_tag_variable_rate_ff::make(bool update_once,
                                                                 double update_step)
 {
-    return gnuradio::get_initial_sptr(
-        new test_tag_variable_rate_ff_impl(update_once, update_step));
+    return gnuradio::make_block_sptr<test_tag_variable_rate_ff_impl>(update_once,
+                                                                     update_step);
 }
 
 test_tag_variable_rate_ff_impl::test_tag_variable_rate_ff_impl(bool update_once,

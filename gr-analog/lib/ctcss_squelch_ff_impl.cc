@@ -13,7 +13,7 @@
 #endif
 
 #include "ctcss_squelch_ff_impl.h"
-#include <boost/make_unique.hpp>
+#include <memory>
 
 namespace gr {
 namespace analog {
@@ -29,8 +29,8 @@ static int max_tone_index = 37;
 ctcss_squelch_ff::sptr
 ctcss_squelch_ff::make(int rate, float freq, float level, int len, int ramp, bool gate)
 {
-    return gnuradio::get_initial_sptr(
-        new ctcss_squelch_ff_impl(rate, freq, level, len, ramp, gate));
+    return gnuradio::make_block_sptr<ctcss_squelch_ff_impl>(
+        rate, freq, level, len, ramp, gate);
 }
 
 int ctcss_squelch_ff_impl::find_tone(float freq)
@@ -88,9 +88,9 @@ ctcss_squelch_ff_impl::ctcss_squelch_ff_impl(
     float f_l, f_r;
     compute_freqs(d_freq, f_l, f_r);
 
-    d_goertzel_l = boost::make_unique<fft::goertzel>(d_rate, d_len, f_l);
-    d_goertzel_c = boost::make_unique<fft::goertzel>(d_rate, d_len, freq);
-    d_goertzel_r = boost::make_unique<fft::goertzel>(d_rate, d_len, f_r);
+    d_goertzel_l = std::make_unique<fft::goertzel>(d_rate, d_len, f_l);
+    d_goertzel_c = std::make_unique<fft::goertzel>(d_rate, d_len, freq);
+    d_goertzel_r = std::make_unique<fft::goertzel>(d_rate, d_len, f_r);
 }
 
 ctcss_squelch_ff_impl::~ctcss_squelch_ff_impl() {}

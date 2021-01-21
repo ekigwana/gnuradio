@@ -16,9 +16,9 @@
 #include <gnuradio/blocks/count_bits.h>
 #include <gnuradio/digital/simple_framer_sync.h>
 #include <gnuradio/io_signature.h>
-#include <assert.h>
-#include <string.h>
+#include <cassert>
 #include <cstdio>
+#include <cstring>
 #include <stdexcept>
 
 namespace gr {
@@ -28,7 +28,7 @@ static const int THRESHOLD = 3;
 
 simple_correlator::sptr simple_correlator::make(int payload_bytesize)
 {
-    return gnuradio::get_initial_sptr(new simple_correlator_impl(payload_bytesize));
+    return gnuradio::make_block_sptr<simple_correlator_impl>(payload_bytesize);
 }
 
 simple_correlator_impl::simple_correlator_impl(int payload_bytesize)

@@ -23,8 +23,7 @@ pfb_arb_resampler_ccf::sptr pfb_arb_resampler_ccf::make(float rate,
                                                         const std::vector<float>& taps,
                                                         unsigned int filter_size)
 {
-    return gnuradio::get_initial_sptr(
-        new pfb_arb_resampler_ccf_impl(rate, taps, filter_size));
+    return gnuradio::make_block_sptr<pfb_arb_resampler_ccf_impl>(rate, taps, filter_size);
 }
 
 
@@ -41,8 +40,6 @@ pfb_arb_resampler_ccf_impl::pfb_arb_resampler_ccf_impl(float rate,
     set_history(d_resamp.taps_per_filter());
     set_relative_rate(rate);
 }
-
-pfb_arb_resampler_ccf_impl::~pfb_arb_resampler_ccf_impl() {}
 
 void pfb_arb_resampler_ccf_impl::forecast(int noutput_items,
                                           gr_vector_int& ninput_items_required)

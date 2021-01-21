@@ -14,13 +14,12 @@
 
 #include "file_descriptor_source_impl.h"
 #include <gnuradio/io_signature.h>
-#include <errno.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <cerrno>
 #include <cstdio>
+#include <cstring>
 #include <stdexcept>
 
 #ifdef HAVE_IO_H
@@ -33,8 +32,7 @@ namespace blocks {
 file_descriptor_source::sptr
 file_descriptor_source::make(size_t itemsize, int fd, bool repeat)
 {
-    return gnuradio::get_initial_sptr(
-        new file_descriptor_source_impl(itemsize, fd, repeat));
+    return gnuradio::make_block_sptr<file_descriptor_source_impl>(itemsize, fd, repeat);
 }
 
 file_descriptor_source_impl::file_descriptor_source_impl(size_t itemsize,

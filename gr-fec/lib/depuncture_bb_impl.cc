@@ -15,9 +15,9 @@
 #include "depuncture_bb_impl.h"
 #include <gnuradio/io_signature.h>
 #include <pmt/pmt.h>
-#include <stdio.h>
 #include <volk/volk.h>
 #include <boost/bind.hpp>
+#include <cstdio>
 #include <string>
 
 namespace gr {
@@ -26,8 +26,8 @@ namespace fec {
 depuncture_bb::sptr
 depuncture_bb::make(int puncsize, int puncpat, int delay, uint8_t symbol)
 {
-    return gnuradio::get_initial_sptr(
-        new depuncture_bb_impl(puncsize, puncpat, delay, symbol));
+    return gnuradio::make_block_sptr<depuncture_bb_impl>(
+        puncsize, puncpat, delay, symbol);
 }
 
 depuncture_bb_impl::depuncture_bb_impl(int puncsize,

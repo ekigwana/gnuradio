@@ -19,7 +19,7 @@
 
 #include <volk/volk.h>
 
-#include <string.h>
+#include <cstring>
 
 namespace gr {
 namespace qtgui {
@@ -35,16 +35,16 @@ sink_c::sptr sink_c::make(int fftsize,
                           bool plotconst,
                           QWidget* parent)
 {
-    return gnuradio::get_initial_sptr(new sink_c_impl(fftsize,
-                                                      wintype,
-                                                      fc,
-                                                      bw,
-                                                      name,
-                                                      plotfreq,
-                                                      plotwaterfall,
-                                                      plottime,
-                                                      plotconst,
-                                                      parent));
+    return gnuradio::make_block_sptr<sink_c_impl>(fftsize,
+                                                  wintype,
+                                                  fc,
+                                                  bw,
+                                                  name,
+                                                  plotfreq,
+                                                  plotwaterfall,
+                                                  plottime,
+                                                  plotconst,
+                                                  parent);
 }
 
 sink_c_impl::sink_c_impl(int fftsize,
@@ -61,7 +61,7 @@ sink_c_impl::sink_c_impl(int fftsize,
             io_signature::make(1, -1, sizeof(gr_complex)),
             io_signature::make(0, 0, 0)),
       d_fftsize(fftsize),
-      d_wintype((filter::firdes::win_type)(wintype)),
+      d_wintype((fft::window::win_type)(wintype)),
       d_center_freq(fc),
       d_bandwidth(bw),
       d_name(name),
@@ -92,7 +92,7 @@ sink_c_impl::sink_c_impl(int fftsize,
     // this is usually desired when plotting
     d_shift = true;
 
-    d_fft = new fft::fft_complex(d_fftsize, true);
+    d_fft = new fft::fft_complex_fwd(d_fftsize);
 
     d_index = 0;
     d_residbuf =
@@ -239,8 +239,8 @@ void sink_c_impl::fft(float* data_out, const gr_complex* data_in, int size)
 
 void sink_c_impl::windowreset()
 {
-    filter::firdes::win_type newwintype;
-    newwintype = (filter::firdes::win_type)d_main_gui->getWindowType();
+    fft::window::win_type newwintype;
+    newwintype = (fft::window::win_type)d_main_gui->getWindowType();
     if (d_wintype != newwintype) {
         d_wintype = newwintype;
         buildwindow();
@@ -279,7 +279,7 @@ void sink_c_impl::fftresize()
 
         // Reset FFTW plan for new size
         delete d_fft;
-        d_fft = new fft::fft_complex(d_fftsize, true);
+        d_fft = new fft::fft_complex_fwd(d_fftsize);
     }
 }
 

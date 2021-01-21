@@ -8,9 +8,6 @@
 #
 ''' All the templates for skeleton files (needed by ModToolAdd) '''
 
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 from datetime import datetime
 
@@ -122,8 +119,8 @@ namespace gr {
     ${blockname}::sptr
     ${blockname}::make(${strip_default_values(arglist)})
     {
-      return gnuradio::get_initial_sptr
-        (new ${blockname}_impl(${strip_arg_types(arglist)}));
+      return gnuradio::make_block_sptr<${blockname}_impl>(
+        ${strip_arg_types(arglist)});
     }
 
 <%
@@ -142,12 +139,12 @@ namespace gr {
     if blocktype == 'source':
         inputsig = '0, 0, 0'
     else:
-        inputsig = '1, 1/* min, max nr of inputs */, sizeof(input_type)'
+        inputsig = '1 /* min inputs */, 1 /* max inputs */, sizeof(input_type)'
     endif
     if blocktype == 'sink':
         outputsig = '0, 0, 0'
     else:
-        outputsig = '1, 1/* min, max nr of outputs */, sizeof(output_type)'
+        outputsig = '1 /* min outputs */, 1 /*max outputs */, sizeof(output_type)'
     endif
 %>
     /*

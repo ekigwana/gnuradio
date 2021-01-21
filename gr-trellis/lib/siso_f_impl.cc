@@ -14,7 +14,7 @@
 
 #include "siso_f_impl.h"
 #include <gnuradio/io_signature.h>
-#include <assert.h>
+#include <cassert>
 #include <iostream>
 #include <stdexcept>
 
@@ -24,8 +24,8 @@ namespace trellis {
 siso_f::sptr siso_f::make(
     const fsm& FSM, int K, int S0, int SK, bool POSTI, bool POSTO, siso_type_t SISO_TYPE)
 {
-    return gnuradio::get_initial_sptr(
-        new siso_f_impl(FSM, K, S0, SK, POSTI, POSTO, SISO_TYPE));
+    return gnuradio::make_block_sptr<siso_f_impl>(
+        FSM, K, S0, SK, POSTI, POSTO, SISO_TYPE);
 }
 
 

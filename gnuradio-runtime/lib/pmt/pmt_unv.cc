@@ -17,6 +17,7 @@
 #include "pmt_int.h"
 #include "pmt_unv_int.h"
 #include <pmt/pmt.h>
+#include <iomanip>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -139,7 +140,7 @@ uint8_t* u8vector_writable_elements(pmt_t vector, size_t& len)
 const std::string pmt_u8vector::string_ref(size_t k) const
 {
     const auto& ch = ref(k);
-    return std::string(&ch, &ch + 1);
+    return std::to_string(ch);
 }
 
 } /* namespace pmt */
@@ -262,7 +263,7 @@ int8_t* s8vector_writable_elements(pmt_t vector, size_t& len)
 const std::string pmt_s8vector::string_ref(size_t k) const
 {
     const auto& ch = ref(k);
-    return std::string(&ch, &ch + 1);
+    return std::to_string(ch);
 }
 
 } /* namespace pmt */
@@ -1146,9 +1147,9 @@ float* f32vector_writable_elements(pmt_t vector, size_t& len)
 
 const std::string pmt_f32vector::string_ref(size_t k) const
 {
-    char buf[128];
-    snprintf(buf, sizeof(buf), "%.*f", std::numeric_limits<float>::digits10, ref(k));
-    return buf;
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(std::numeric_limits<float>::digits10) << ref(k);
+    return ss.str();
 }
 
 } /* namespace pmt */
@@ -1273,9 +1274,10 @@ double* f64vector_writable_elements(pmt_t vector, size_t& len)
 
 const std::string pmt_f64vector::string_ref(size_t k) const
 {
-    char buf[128];
-    snprintf(buf, sizeof(buf), "%.*f", std::numeric_limits<double>::digits10, ref(k));
-    return buf;
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(std::numeric_limits<double>::digits10)
+       << ref(k);
+    return ss.str();
 }
 
 } /* namespace pmt */

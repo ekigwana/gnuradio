@@ -14,14 +14,14 @@
 
 #include "g723_40_encode_sb_impl.h"
 #include <gnuradio/io_signature.h>
-#include <limits.h>
+#include <climits>
 
 namespace gr {
 namespace vocoder {
 
 g723_40_encode_sb::sptr g723_40_encode_sb::make()
 {
-    return gnuradio::get_initial_sptr(new g723_40_encode_sb_impl());
+    return gnuradio::make_block_sptr<g723_40_encode_sb_impl>();
 }
 
 g723_40_encode_sb_impl::g723_40_encode_sb_impl()

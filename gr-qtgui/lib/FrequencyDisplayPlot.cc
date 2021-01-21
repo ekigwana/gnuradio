@@ -43,7 +43,7 @@ public:
 
 protected:
     using QwtPlotZoomer::trackerText;
-    virtual QwtText trackerText(QPoint const& p) const
+    QwtText trackerText(QPoint const& p) const override
     {
         QwtDoublePoint dp = QwtPlotZoomer::invTransform(p);
         QwtText t(QString("%1 %2, %3 %4")
@@ -377,10 +377,10 @@ void FrequencyDisplayPlot::plotNewData(const std::vector<double*> dataPoints,
                        _npoints_in * sizeof(double));
 
                 for (int64_t point = 0; point < _npoints_in; point++) {
-                    if (dataPoints[n][point] < d_min_fft_data[point]) {
+                    if (dataPoints[n][point + _in_index] < d_min_fft_data[point]) {
                         d_min_fft_data[point] = dataPoints[n][point + _in_index];
                     }
-                    if (dataPoints[n][point] > d_max_fft_data[point]) {
+                    if (dataPoints[n][point + _in_index] > d_max_fft_data[point]) {
                         d_max_fft_data[point] = dataPoints[n][point + _in_index];
                     }
 

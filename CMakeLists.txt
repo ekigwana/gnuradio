@@ -1,4 +1,4 @@
-# Copyright 2011-2012,2014,2017 Free Software Foundation, Inc.
+# Copyright 2011-2020 Free Software Foundation, Inc.
 #
 # This file is part of GNU Radio
 #
@@ -35,26 +35,34 @@ SET(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 message(STATUS "Build type set to ${CMAKE_BUILD_TYPE}.")
 
 include(GrComponent)
-GR_REGISTER_COMPONENT("testing-support" ENABLE_TESTING)
+########################################################################
+# Setup Boost for global use (within this build)
+# Do this before enabling testing support, as it depends
+# on unit_test_framework
+########################################################################
+include(GrBoost)
+GR_REGISTER_COMPONENT("testing-support" ENABLE_TESTING
+         Boost_unit_test_framework_FOUND )
 
 # Set the version information here
 SET(VERSION_MAJOR 3)
-SET(VERSION_API   9)
+SET(VERSION_API   10)
 SET(VERSION_ABI   0)
-SET(VERSION_PATCH 0-git)
+SET(VERSION_PATCH git)
 include(GrVersion) #setup version info
 
 # Minimum dependency versions for central dependencies:
-set(GR_BOOST_MIN_VERSION "1.53")
-set(GR_CMAKE_MIN_VERSION "3.5.1")
-set(GR_MAKO_MIN_VERSION "0.4.2")
-set(GR_PYTHON_MIN_VERSION "3.6.5")
-set(GR_NUMPY_MIN_VERSION "1.13.0")
-set(GCC_MIN_VERSION "4.8.4")
-set(CLANG_MIN_VERSION "3.4.0")
-set(APPLECLANG_MIN_VERSION "500")
-set(MSVC_MIN_VERSION "1800")
-set(VOLK_MIN_VERSION "2.1.0")
+
+set(GR_BOOST_MIN_VERSION "1.65")      ## Version in Ubuntu 18.04LTS
+set(GR_CMAKE_MIN_VERSION "3.10.2")    ## Version in Ubuntu 18.04LTS
+set(GR_MAKO_MIN_VERSION "1.0.7")      ## debian buster, 18.04LTS
+set(GR_PYTHON_MIN_VERSION "3.6.5")    ## Version in Ubuntu 18.04LTS
+set(GR_NUMPY_MIN_VERSION "1.13.3")    ## Version in Ubuntu 18.04LTS
+set(GCC_MIN_VERSION "8.3.0")          ## debian buster
+set(CLANG_MIN_VERSION "11.0.0")       ## debian bullseye, Fedora 33
+set(APPLECLANG_MIN_VERSION "1100")    ## same as clang 11.0.0, in Xcode11
+set(MSVC_MIN_VERSION "1914")          ## VS2017 15.7, for full-ish C++17 support
+set(VOLK_MIN_VERSION "2.4.1")         ## first version with CPU features
 set(PYBIND11_MIN_VERSION "2.4") # pybind11 sets versions like 2.4.dev4, which compares < 2.4.3
 
 # Enable generation of compile_commands.json for code completion engines
@@ -118,7 +126,7 @@ ENDIF()
 
 set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD 11)
 
 ########################################################################
@@ -271,12 +279,20 @@ endif(ENABLE_PERFORMANCE_COUNTERS)
 ########################################################################
 # Variables replaced when configuring the package config files
 ########################################################################
-file(TO_NATIVE_PATH "${CMAKE_INSTALL_PREFIX}"           prefix)
-file(TO_NATIVE_PATH "\${prefix}"                        exec_prefix)
-file(TO_NATIVE_PATH "\${exec_prefix}/${GR_LIBRARY_DIR}" libdir)
-file(TO_NATIVE_PATH "\${prefix}/${GR_INCLUDE_DIR}"      includedir)
-file(TO_NATIVE_PATH "${SYSCONFDIR}"                     SYSCONFDIR)
-file(TO_NATIVE_PATH "${GR_PREFSDIR}"                    GR_PREFSDIR)
+file(TO_CMAKE_PATH "${CMAKE_INSTALL_PREFIX}"           prefix)
+file(TO_CMAKE_PATH "\${prefix}"                        exec_prefix)
+file(TO_CMAKE_PATH "\${exec_prefix}/${GR_LIBRARY_DIR}" libdir)
+file(TO_CMAKE_PATH "\${prefix}/${GR_INCLUDE_DIR}"      includedir)
+file(TO_CMAKE_PATH "${SYSCONFDIR}"                     SYSCONFDIR)
+file(TO_CMAKE_PATH "${GR_PREFSDIR}"                    GR_PREFSDIR)
+
+if(WIN32)
+    file(RELATIVE_PATH prefix_relative_to_lib "${prefix}/${GR_RUNTIME_DIR}" "${prefix}")
+else(WIN32)
+    file(RELATIVE_PATH prefix_relative_to_lib "${prefix}/${GR_LIBRARY_DIR}" "${prefix}")
+endif(WIN32)
+file(RELATIVE_PATH SYSCONFDIR_relative_to_prefix "${prefix}" "${SYSCONFDIR}")
+file(RELATIVE_PATH GR_PREFSDIR_relative_to_prefix "${prefix}" "${GR_PREFSDIR}")
 
 ########################################################################
 # On Apple only, set install name and use rpath correctly, if not already set
@@ -311,15 +327,9 @@ add_custom_target(uninstall
 )
 
 ########################################################################
-# Setup Boost for global use (within this build)
-########################################################################
-include(GrBoost)
-
-########################################################################
 # Enable python component
 ########################################################################
 include(GrPython)
-GR_PYTHON_CHECK_MODULE("six - python 2 and 3 compatibility library" six "True" SIX_FOUND)
 GR_PYTHON_CHECK_MODULE(
     "numpy"
     numpy
@@ -340,14 +350,13 @@ ENDIF()
 
 execute_process(
     COMMAND "${PYTHON_EXECUTABLE}" -c
-    "from __future__ import print_function\ntry:\n import numpy\n import os\n inc_path = numpy.get_include()\n if os.path.exists(os.path.join(inc_path, 'numpy', 'arrayobject.h')):\n  print(inc_path, end='')\nexcept:\n pass"
+    "try:\n import numpy\n import os\n inc_path = numpy.get_include()\n if os.path.exists(os.path.join(inc_path, 'numpy', 'arrayobject.h')):\n  print(inc_path, end='')\nexcept:\n pass"
     OUTPUT_VARIABLE PYTHON_NUMPY_INCLUDE_DIR)
 
 include(GrComponent)
 GR_REGISTER_COMPONENT("python-support" ENABLE_PYTHON
     PYTHONLIBS_FOUND
     pybind11_FOUND
-    SIX_FOUND
     NUMPY_FOUND
 )
 
@@ -356,6 +365,10 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Coverage")
   setup_target_for_coverage(coverage "ctest || exit 0" coverage)
 endif()
 
+########################################################################
+# Enable/disable examples
+########################################################################
+OPTION(ENABLE_EXAMPLES "Enable examples" ON)
 
 ########################################################################
 # Detect and configure VOLK
@@ -434,6 +447,7 @@ list(APPEND GR_TEST_PYTHON_DIRS
 
 # gnuradio-runtime/include/gnuradio/block.h needs a define to tell it which
 # multiprecision arithmetic library header to include
+include(FindPkgConfig)
 find_package(MPLIB)
 add_definitions(${MPLIB_DEFINITIONS})
 
@@ -513,6 +527,7 @@ install(
   DESTINATION ${CMAKE_MODULES_DIR}/gnuradio
 )
 
+file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/grc/grc.conf "enabled_components = ${_gr_enabled_components}")
 
 ########################################################################
 # Print summary
@@ -526,13 +541,6 @@ CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
   ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime/include/gnuradio/config.h
 )
-
-#Re-generate the constants file, now that we actually know which components will be enabled.
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/gnuradio-runtime/lib/constants.cc.in
-    ${CMAKE_CURRENT_BINARY_DIR}/gnuradio-runtime/lib/constants.cc
-    ESCAPE_QUOTES
-@ONLY)
 
 # Install config.h in include/gnuradio
 install(

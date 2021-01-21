@@ -14,7 +14,7 @@
 
 #include "ulaw_encode_sb_impl.h"
 #include <gnuradio/io_signature.h>
-#include <limits.h>
+#include <climits>
 
 namespace gr {
 namespace vocoder {
@@ -25,7 +25,7 @@ extern "C" {
 
 ulaw_encode_sb::sptr ulaw_encode_sb::make()
 {
-    return gnuradio::get_initial_sptr(new ulaw_encode_sb_impl());
+    return gnuradio::make_block_sptr<ulaw_encode_sb_impl>();
 }
 
 ulaw_encode_sb_impl::ulaw_encode_sb_impl()

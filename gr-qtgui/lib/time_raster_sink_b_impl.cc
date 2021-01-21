@@ -19,7 +19,7 @@
 
 #include <volk/volk.h>
 
-#include <string.h>
+#include <cstring>
 
 namespace gr {
 namespace qtgui {
@@ -33,8 +33,8 @@ time_raster_sink_b::sptr time_raster_sink_b::make(double samp_rate,
                                                   int nconnections,
                                                   QWidget* parent)
 {
-    return gnuradio::get_initial_sptr(new time_raster_sink_b_impl(
-        samp_rate, rows, cols, mult, offset, name, nconnections, parent));
+    return gnuradio::make_block_sptr<time_raster_sink_b_impl>(
+        samp_rate, rows, cols, mult, offset, name, nconnections, parent);
 }
 
 time_raster_sink_b_impl::time_raster_sink_b_impl(double samp_rate,
@@ -154,6 +154,26 @@ PyObject* time_raster_sink_b_impl::pyqwidget()
 #else
 void* time_raster_sink_b_impl::pyqwidget() { return NULL; }
 #endif
+
+void time_raster_sink_b_impl::set_x_label(const std::string& label)
+{
+    d_main_gui->setXLabel(label);
+}
+
+void time_raster_sink_b_impl::set_x_range(double start, double end)
+{
+    d_main_gui->setXAxis(start, end);
+}
+
+void time_raster_sink_b_impl::set_y_label(const std::string& label)
+{
+    d_main_gui->setYLabel(label);
+}
+
+void time_raster_sink_b_impl::set_y_range(double start, double end)
+{
+    d_main_gui->setYAxis(start, end);
+}
 
 void time_raster_sink_b_impl::set_update_time(double t)
 {

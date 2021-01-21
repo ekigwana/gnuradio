@@ -15,8 +15,8 @@
 #include "fft_filter_fff_impl.h"
 #include <gnuradio/io_signature.h>
 
-#include <assert.h>
-#include <math.h>
+#include <cassert>
+#include <cmath>
 #include <stdexcept>
 
 namespace gr {
@@ -25,8 +25,7 @@ namespace filter {
 fft_filter_fff::sptr
 fft_filter_fff::make(int decimation, const std::vector<float>& taps, int nthreads)
 {
-    return gnuradio::get_initial_sptr(
-        new fft_filter_fff_impl(decimation, taps, nthreads));
+    return gnuradio::make_block_sptr<fft_filter_fff_impl>(decimation, taps, nthreads);
 }
 
 

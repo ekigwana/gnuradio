@@ -44,7 +44,7 @@ public:
 
     /*!
      * Make a new gateway block.
-     * \param py_object the pybind11 object with callback
+     * \param py_handle the pybind11 object with callback
      * \param name the name of the block (Ex: "Shirley")
      * \param in_sig the input signature for this block
      * \param out_sig the output signature for this block
@@ -112,8 +112,8 @@ public:
                                         std::string& handler_name) = 0;
 
 protected:
-    virtual bool has_msg_handler(pmt::pmt_t which_port) = 0;
-    virtual void dispatch_msg(pmt::pmt_t which_port, pmt::pmt_t msg) = 0;
+    bool has_msg_handler(pmt::pmt_t which_port) override = 0;
+    void dispatch_msg(pmt::pmt_t which_port, pmt::pmt_t msg) override = 0;
 };
 
 } /* namespace gr */

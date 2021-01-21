@@ -14,7 +14,7 @@
 
 #include "alaw_decode_bs_impl.h"
 #include <gnuradio/io_signature.h>
-#include <limits.h>
+#include <climits>
 
 namespace gr {
 namespace vocoder {
@@ -25,7 +25,7 @@ extern "C" {
 
 alaw_decode_bs::sptr alaw_decode_bs::make()
 {
-    return gnuradio::get_initial_sptr(new alaw_decode_bs_impl());
+    return gnuradio::make_block_sptr<alaw_decode_bs_impl>();
 }
 
 alaw_decode_bs_impl::alaw_decode_bs_impl()

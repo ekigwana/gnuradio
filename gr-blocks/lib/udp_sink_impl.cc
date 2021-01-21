@@ -15,12 +15,12 @@
 #include "udp_sink_impl.h"
 #include <gnuradio/io_signature.h>
 #include <gnuradio/thread/thread.h>
-#include <stdio.h>
-#include <string.h>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <boost/format.hpp>
-#include <boost/make_unique.hpp>
+#include <cstdio>
+#include <cstring>
+#include <memory>
 #include <stdexcept>
 
 namespace gr {
@@ -29,8 +29,8 @@ namespace blocks {
 udp_sink::sptr udp_sink::make(
     size_t itemsize, const std::string& host, int port, int payload_size, bool eof)
 {
-    return gnuradio::get_initial_sptr(
-        new udp_sink_impl(itemsize, host, port, payload_size, eof));
+    return gnuradio::make_block_sptr<udp_sink_impl>(
+        itemsize, host, port, payload_size, eof);
 }
 
 udp_sink_impl::udp_sink_impl(
@@ -65,7 +65,7 @@ void udp_sink_impl::connect(const std::string& host, int port)
             host, s_port, boost::asio::ip::resolver_query_base::passive);
         d_endpoint = *resolver.resolve(query);
 
-        d_socket = boost::make_unique<boost::asio::ip::udp::socket>(d_io_service);
+        d_socket = std::make_unique<boost::asio::ip::udp::socket>(d_io_service);
         d_socket->open(d_endpoint.protocol());
 
         boost::asio::socket_base::reuse_address roption(true);

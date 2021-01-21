@@ -28,14 +28,14 @@ udp_source::sptr udp_source::make(size_t itemsize,
                                   bool source_zeros,
                                   bool ipv6)
 {
-    return gnuradio::get_initial_sptr(new udp_source_impl(itemsize,
-                                                          veclen,
-                                                          port,
-                                                          header_type,
-                                                          payloadsize,
-                                                          notify_missed,
-                                                          source_zeros,
-                                                          ipv6));
+    return gnuradio::make_block_sptr<udp_source_impl>(itemsize,
+                                                      veclen,
+                                                      port,
+                                                      header_type,
+                                                      payloadsize,
+                                                      notify_missed,
+                                                      source_zeros,
+                                                      ipv6);
 }
 
 /*
@@ -224,7 +224,7 @@ int udp_source_impl::work(int noutput_items,
     unsigned int num_requested = noutput_items * d_block_size;
 
     // quick exit if nothing to do
-    if ((bytes_available == 0) && (d_localqueue->size() == 0)) {
+    if ((bytes_available == 0) && (d_localqueue->empty())) {
         underrun_counter++;
         d_partial_frame_counter = 0;
         if (d_source_zeros) {
@@ -288,7 +288,7 @@ int udp_source_impl::work(int noutput_items,
             // This is just a safety to clear in the case there's a hanging partial
             // packet. If we've lingered through a number of calls and we still don't
             // have any data, clear the stale data.
-            while (d_localqueue->size() > 0)
+            while (!d_localqueue->empty())
                 d_localqueue->pop_front();
 
             d_partial_frame_counter = 0;

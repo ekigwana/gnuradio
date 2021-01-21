@@ -14,8 +14,8 @@
 
 #include "protocol_formatter_bb_impl.h"
 #include <gnuradio/io_signature.h>
-#include <stdio.h>
 #include <volk/volk.h>
+#include <cstdio>
 
 namespace gr {
 namespace digital {
@@ -24,8 +24,7 @@ protocol_formatter_bb::sptr
 protocol_formatter_bb::make(const header_format_base::sptr& format,
                             const std::string& len_tag_key)
 {
-    return gnuradio::get_initial_sptr(
-        new protocol_formatter_bb_impl(format, len_tag_key));
+    return gnuradio::make_block_sptr<protocol_formatter_bb_impl>(format, len_tag_key);
 }
 
 protocol_formatter_bb_impl::protocol_formatter_bb_impl(

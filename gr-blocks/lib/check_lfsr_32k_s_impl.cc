@@ -14,15 +14,15 @@
 
 #include "check_lfsr_32k_s_impl.h"
 #include <gnuradio/io_signature.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 namespace gr {
 namespace blocks {
 
 check_lfsr_32k_s::sptr check_lfsr_32k_s::make()
 {
-    return gnuradio::get_initial_sptr(new check_lfsr_32k_s_impl());
+    return gnuradio::make_block_sptr<check_lfsr_32k_s_impl>();
 }
 
 check_lfsr_32k_s_impl::check_lfsr_32k_s_impl()

@@ -14,7 +14,7 @@
 
 #include "filterbank_vcvcf_impl.h"
 #include <gnuradio/io_signature.h>
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 
 namespace gr {
@@ -22,7 +22,7 @@ namespace filter {
 
 filterbank_vcvcf::sptr filterbank_vcvcf::make(const std::vector<std::vector<float>>& taps)
 {
-    return gnuradio::get_initial_sptr(new filterbank_vcvcf_impl(taps));
+    return gnuradio::make_block_sptr<filterbank_vcvcf_impl>(taps);
 }
 
 filterbank_vcvcf_impl::filterbank_vcvcf_impl(const std::vector<std::vector<float>>& taps)
@@ -33,8 +33,6 @@ filterbank_vcvcf_impl::filterbank_vcvcf_impl(const std::vector<std::vector<float
 {
     set_history(d_ntaps + 1);
 }
-
-filterbank_vcvcf_impl::~filterbank_vcvcf_impl() {}
 
 void filterbank_vcvcf_impl::set_taps(const std::vector<std::vector<float>>& taps)
 {

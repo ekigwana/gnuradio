@@ -23,8 +23,8 @@ template <class IN_T, class OUT_T, class TAP_T>
 typename fir_filter_blk<IN_T, OUT_T, TAP_T>::sptr
 fir_filter_blk<IN_T, OUT_T, TAP_T>::make(int decimation, const std::vector<TAP_T>& taps)
 {
-    return gnuradio::get_initial_sptr(
-        new fir_filter_blk_impl<IN_T, OUT_T, TAP_T>(decimation, taps));
+    return gnuradio::make_block_sptr<fir_filter_blk_impl<IN_T, OUT_T, TAP_T>>(decimation,
+                                                                              taps);
 }
 
 
@@ -35,18 +35,13 @@ fir_filter_blk_impl<IN_T, OUT_T, TAP_T>::fir_filter_blk_impl(
                      io_signature::make(1, 1, sizeof(IN_T)),
                      io_signature::make(1, 1, sizeof(OUT_T)),
                      decimation),
-      d_fir(decimation, taps),
+      d_fir(taps),
       d_updated(false)
 {
     this->set_history(d_fir.ntaps());
 
     const int alignment_multiple = volk_get_alignment() / sizeof(float);
     this->set_alignment(std::max(1, alignment_multiple));
-}
-
-template <class IN_T, class OUT_T, class TAP_T>
-fir_filter_blk_impl<IN_T, OUT_T, TAP_T>::~fir_filter_blk_impl()
-{
 }
 
 template <class IN_T, class OUT_T, class TAP_T>

@@ -7,8 +7,6 @@
 #
 #
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 from .gr_python import (top_block_pb,
     top_block_wait_unlocked, top_block_run_unlocked,
@@ -90,7 +88,7 @@ class top_block(hier_block2):
         Create a top block with a given name.
         """
         # not calling hier_block2.__init__, we set our own _impl
-        self._impl = top_block_pb(name)
+        self._impl = top_block_pb(name, catch_exceptions)
         self.handle_sigint = True
 
     def start(self, max_noutput_items=10000000):

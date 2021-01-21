@@ -8,9 +8,6 @@
 #
 """ Create Python bindings for GR block """
 
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 import os
 import click
@@ -30,7 +27,11 @@ from .base import common_params, block_name, run, cli_input
 
 @click.command('bind', short_help=ModToolGenBindings.description)
 @click.option('-o', '--output', is_flag=True,
-              help='If given, a file with desired output format will be generated')
+              help = 'If given, a file with desired output format will be generated')
+@click.option('--addl_includes', default = None,
+              help = 'Comma separated list of additional include directories (default None)')
+@click.option('-D', '--define_symbols', multiple=True, default=None,
+              help = 'Set precompiler defines')
 @common_params
 @block_name
 def cli(**kwargs):

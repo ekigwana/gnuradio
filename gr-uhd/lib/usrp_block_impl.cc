@@ -9,7 +9,7 @@
  */
 
 #include "usrp_block_impl.h"
-#include <boost/make_shared.hpp>
+#include <chrono>
 
 using namespace gr::uhd;
 
@@ -36,6 +36,11 @@ const pmt::pmt_t gr::uhd::cmd_gain_key()
     static const pmt::pmt_t val = pmt::mp("gain");
     return val;
 }
+const pmt::pmt_t gr::uhd::cmd_power_key()
+{
+    static const pmt::pmt_t val = pmt::mp("power_dbm");
+    return val;
+}
 const pmt::pmt_t gr::uhd::cmd_freq_key()
 {
     static const pmt::pmt_t val = pmt::mp("freq");
@@ -49,6 +54,11 @@ const pmt::pmt_t gr::uhd::cmd_lo_offset_key()
 const pmt::pmt_t gr::uhd::cmd_tune_key()
 {
     static const pmt::pmt_t val = pmt::mp("tune");
+    return val;
+}
+const pmt::pmt_t gr::uhd::cmd_mtune_key()
+{
+    static const pmt::pmt_t val = pmt::mp("mtune");
     return val;
 }
 const pmt::pmt_t gr::uhd::cmd_lo_freq_key()
@@ -96,6 +106,17 @@ const pmt::pmt_t gr::uhd::cmd_tag_key()
     static const pmt::pmt_t val = pmt::mp("tag");
     return val;
 }
+const pmt::pmt_t gr::uhd::cmd_pc_clock_resync_key()
+{
+    static const pmt::pmt_t val = pmt::mp("pc_clock_resync");
+    return val;
+}
+
+const pmt::pmt_t gr::uhd::cmd_gpio_key()
+{
+    static const pmt::pmt_t val = pmt::mp("gpio");
+    return val;
+}
 
 const pmt::pmt_t gr::uhd::ant_direction_rx()
 {
@@ -115,6 +136,7 @@ usrp_block_impl::usrp_block_impl(const ::uhd::device_addr_t& device_addr,
       _nchan(stream_args.channels.size()),
       _stream_now(_nchan == 1 and ts_tag_name.empty()),
       _start_time_set(false),
+      _force_tune(false),
       _curr_tune_req(stream_args.channels.size(), ::uhd::tune_request_t()),
       _chans_to_tune(stream_args.channels.size())
 {
@@ -128,19 +150,25 @@ usrp_block_impl::usrp_block_impl(const ::uhd::device_addr_t& device_addr,
                     [this](pmt::pmt_t msg) { this->msg_handler_command(msg); });
 
 // cuz we lazy:
-#define REGISTER_CMD_HANDLER(key, _handler) \
-    register_msg_cmd_handler(key,           \
-                             boost::bind(&usrp_block_impl::_handler, this, _1, _2, _3))
+#define REGISTER_CMD_HANDLER(key, _handler)                                   \
+    register_msg_cmd_handler(                                                 \
+        key, [this](const pmt::pmt_t& var, int chan, const pmt::pmt_t& msg) { \
+            this->_handler(var, chan, msg);                                   \
+        })
     // Register default command handlers:
     REGISTER_CMD_HANDLER(cmd_freq_key(), _cmd_handler_freq);
     REGISTER_CMD_HANDLER(cmd_gain_key(), _cmd_handler_gain);
+    REGISTER_CMD_HANDLER(cmd_power_key(), _cmd_handler_power);
     REGISTER_CMD_HANDLER(cmd_lo_offset_key(), _cmd_handler_looffset);
     REGISTER_CMD_HANDLER(cmd_tune_key(), _cmd_handler_tune);
+    REGISTER_CMD_HANDLER(cmd_mtune_key(), _cmd_handler_mtune);
     REGISTER_CMD_HANDLER(cmd_lo_freq_key(), _cmd_handler_lofreq);
     REGISTER_CMD_HANDLER(cmd_dsp_freq_key(), _cmd_handler_dspfreq);
     REGISTER_CMD_HANDLER(cmd_rate_key(), _cmd_handler_rate);
     REGISTER_CMD_HANDLER(cmd_bandwidth_key(), _cmd_handler_bw);
     REGISTER_CMD_HANDLER(cmd_antenna_key(), _cmd_handler_antenna);
+    REGISTER_CMD_HANDLER(cmd_gpio_key(), _cmd_handler_gpio);
+    REGISTER_CMD_HANDLER(cmd_pc_clock_resync_key(), _cmd_handler_pc_clock_resync);
 }
 
 usrp_block_impl::~usrp_block_impl()
@@ -245,11 +273,13 @@ bool usrp_block_impl::_check_mboard_sensors_locked()
         } else if (_dev->get_clock_source(mboard_index) == "mimo") {
             sensor_name = "mimo_locked";
         }
-        if (not _wait_for_locked_sensor(
-                get_mboard_sensor_names(mboard_index),
-                sensor_name,
-                boost::bind(
-                    &usrp_block_impl::get_mboard_sensor, this, _1, mboard_index))) {
+        if (not _wait_for_locked_sensor(get_mboard_sensor_names(mboard_index),
+                                        sensor_name,
+                                        [this, mboard_index](const std::string& name) {
+                                            return static_cast<::uhd::sensor_value_t>(
+                                                this->get_mboard_sensor(name,
+                                                                        mboard_index));
+                                        })) {
             GR_LOG_WARN(
                 d_logger,
                 boost::format(
@@ -488,7 +518,7 @@ void usrp_block_impl::msg_handler_command(pmt::pmt_t msg)
     // End of legacy backward compat code.
 
     // pmt_dict is a subclass of pmt_pair. Make sure we use pmt_pair!
-    // Old behavior was that these checks were interchangably. Be aware of this change!
+    // Old behavior was that these checks were interchangeable. Be aware of this change!
     if (!(pmt::is_dict(msg)) && pmt::is_pair(msg)) {
         GR_LOG_DEBUG(
             d_logger,
@@ -534,7 +564,18 @@ void usrp_block_impl::msg_handler_command(pmt::pmt_t msg)
                                               pmt::from_long(-1) // Default to all chans
                                               )));
 
-    /// 3) Loop through all the values
+    /// 3) See if a direction was specified
+    pmt::pmt_t direction =
+        pmt::dict_ref(msg,
+                      cmd_direction_key(),
+                      pmt::PMT_NIL // Anything except "TX" or "RX will default to the
+                                   // messaged block direction"
+        );
+    // if the a direction symbol was provided, force a tune
+    _force_tune = pmt::is_symbol(direction);
+
+
+    /// 4) Loop through all the values
     GR_LOG_DEBUG(d_debug_logger, boost::format("Processing command message %s") % msg);
     pmt::pmt_t msg_items = pmt::dict_items(msg);
     for (size_t i = 0; i < pmt::length(msg_items); i++) {
@@ -551,17 +592,9 @@ void usrp_block_impl::msg_handler_command(pmt::pmt_t msg)
             break;
         }
     }
-
-    /// 4) See if a direction was specified
-    pmt::pmt_t direction =
-        pmt::dict_ref(msg,
-                      cmd_direction_key(),
-                      pmt::PMT_NIL // Anything except "TX" or "RX will default to the
-                                   // messaged block direction"
-        );
-
     /// 5) Check if we need to re-tune
     _set_center_freq_from_internals_allchans(direction);
+    _force_tune = false;
 }
 
 
@@ -594,7 +627,7 @@ void usrp_block_impl::_update_curr_tune_req(::uhd::tune_request_t& tune_req, int
         tune_req.rf_freq_policy != _curr_tune_req[chan].rf_freq_policy ||
         tune_req.rf_freq != _curr_tune_req[chan].rf_freq ||
         tune_req.dsp_freq != _curr_tune_req[chan].dsp_freq ||
-        tune_req.dsp_freq_policy != _curr_tune_req[chan].dsp_freq_policy) {
+        tune_req.dsp_freq_policy != _curr_tune_req[chan].dsp_freq_policy || _force_tune) {
         _curr_tune_req[chan] = tune_req;
         _chans_to_tune.set(chan);
     }
@@ -606,14 +639,14 @@ void usrp_block_impl::_cmd_handler_freq(const pmt::pmt_t& freq_,
                                         const pmt::pmt_t& msg)
 {
     double freq = pmt::to_double(freq_);
-    ::uhd::tune_request_t new_tune_reqest(freq);
+    ::uhd::tune_request_t new_tune_request(freq);
     if (pmt::dict_has_key(msg, cmd_lo_offset_key())) {
         double lo_offset =
             pmt::to_double(pmt::dict_ref(msg, cmd_lo_offset_key(), pmt::PMT_NIL));
-        new_tune_reqest = ::uhd::tune_request_t(freq, lo_offset);
+        new_tune_request = ::uhd::tune_request_t(freq, lo_offset);
     }
 
-    _update_curr_tune_req(new_tune_reqest, chan);
+    _update_curr_tune_req(new_tune_request, chan);
 }
 
 void usrp_block_impl::_cmd_handler_looffset(const pmt::pmt_t& lo_offset,
@@ -649,6 +682,21 @@ void usrp_block_impl::_cmd_handler_gain(const pmt::pmt_t& gain_,
     set_gain(gain, chan);
 }
 
+void usrp_block_impl::_cmd_handler_power(const pmt::pmt_t& power_dbm_,
+                                         int chan,
+                                         const pmt::pmt_t& msg)
+{
+    double power_dbm = pmt::to_double(power_dbm_);
+    if (chan == -1) {
+        for (size_t i = 0; i < _nchan; i++) {
+            set_power_reference(power_dbm, i);
+        }
+        return;
+    }
+
+    set_power_reference(power_dbm, chan);
+}
+
 void usrp_block_impl::_cmd_handler_antenna(const pmt::pmt_t& ant,
                                            int chan,
                                            const pmt::pmt_t& msg)
@@ -664,10 +712,58 @@ void usrp_block_impl::_cmd_handler_antenna(const pmt::pmt_t& ant,
     set_antenna(antenna, chan);
 }
 
+void usrp_block_impl::_cmd_handler_gpio(const pmt::pmt_t& gpio_attr,
+                                        int chan,
+                                        const pmt::pmt_t& msg)
+{
+    size_t mboard = pmt::to_long(pmt::dict_ref(
+        msg,
+        cmd_mboard_key(),
+        // pmt::from_long(::uhd::usrp::multi_usrp::ALL_MBOARDS) // Default to all mboards
+        pmt::from_long(0) // default to first mboard
+        ));
+
+    if (!pmt::is_dict(gpio_attr)) {
+        GR_LOG_ERROR(d_logger,
+                     boost::format("gpio_attr in  message is neither dict nor pair: %s") %
+                         gpio_attr);
+        return;
+    }
+    if (!pmt::dict_has_key(gpio_attr, pmt::mp("bank")) ||
+        !pmt::dict_has_key(gpio_attr, pmt::mp("attr")) ||
+        !pmt::dict_has_key(gpio_attr, pmt::mp("value")) ||
+        !pmt::dict_has_key(gpio_attr, pmt::mp("mask"))) {
+        GR_LOG_ERROR(
+            d_logger,
+            boost::format("gpio_attr message must include bank, attr, value and mask"));
+        return;
+    }
+    std::string bank =
+        pmt::symbol_to_string(pmt::dict_ref(gpio_attr, pmt::mp("bank"), pmt::mp("")));
+    std::string attr =
+        pmt::symbol_to_string(pmt::dict_ref(gpio_attr, pmt::mp("attr"), pmt::mp("")));
+    uint32_t value = pmt::to_double(pmt::dict_ref(gpio_attr, pmt::mp("value"), 0));
+    uint32_t mask = pmt::to_double(pmt::dict_ref(gpio_attr, pmt::mp("mask"), 0));
+
+    set_gpio_attr(bank, attr, value, mask, mboard);
+}
+
 void usrp_block_impl::_cmd_handler_rate(const pmt::pmt_t& rate_, int, const pmt::pmt_t&)
 {
     const double rate = pmt::to_double(rate_);
     set_samp_rate(rate);
+}
+
+void usrp_block_impl::_cmd_handler_pc_clock_resync(const pmt::pmt_t&,
+                                                   int,
+                                                   const pmt::pmt_t&)
+{
+    const uint64_t ticks =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+            std::chrono::high_resolution_clock::now().time_since_epoch())
+            .count();
+    const ::uhd::time_spec_t& time_spec = ::uhd::time_spec_t::from_ticks(ticks, 1.0e9);
+    set_time_now(time_spec, ::uhd::usrp::multi_usrp::ALL_MBOARDS);
 }
 
 void usrp_block_impl::_cmd_handler_tune(const pmt::pmt_t& tune,
@@ -676,8 +772,55 @@ void usrp_block_impl::_cmd_handler_tune(const pmt::pmt_t& tune,
 {
     double freq = pmt::to_double(pmt::car(tune));
     double lo_offset = pmt::to_double(pmt::cdr(tune));
-    ::uhd::tune_request_t new_tune_reqest(freq, lo_offset);
-    _update_curr_tune_req(new_tune_reqest, chan);
+    ::uhd::tune_request_t new_tune_request(freq, lo_offset);
+    _update_curr_tune_req(new_tune_request, chan);
+}
+
+void usrp_block_impl::_cmd_handler_mtune(const pmt::pmt_t& tune,
+                                         int chan,
+                                         const pmt::pmt_t& msg)
+{
+    ::uhd::tune_request_t new_tune_request;
+    if (pmt::dict_has_key(tune, pmt::mp("dsp_freq"))) {
+        new_tune_request.dsp_freq =
+            pmt::to_double(pmt::dict_ref(tune, pmt::mp("dsp_freq"), 0));
+    }
+    if (pmt::dict_has_key(tune, pmt::mp("rf_freq"))) {
+        new_tune_request.rf_freq =
+            pmt::to_double(pmt::dict_ref(tune, pmt::mp("rf_freq"), 0));
+    }
+    if (pmt::dict_has_key(tune, pmt::mp("target_freq"))) {
+        new_tune_request.target_freq =
+            pmt::to_double(pmt::dict_ref(tune, pmt::mp("target_freq"), 0));
+    }
+    if (pmt::dict_has_key(tune, pmt::mp("dsp_freq_policy"))) {
+        std::string policy = pmt::symbol_to_string(
+            pmt::dict_ref(tune, pmt::mp("dsp_freq_policy"), pmt::mp("A")));
+        if (policy == "M") {
+            new_tune_request.dsp_freq_policy = ::uhd::tune_request_t::POLICY_MANUAL;
+        } else if (policy == "A") {
+            new_tune_request.dsp_freq_policy = ::uhd::tune_request_t::POLICY_AUTO;
+        } else {
+            new_tune_request.dsp_freq_policy = ::uhd::tune_request_t::POLICY_NONE;
+        }
+    }
+    if (pmt::dict_has_key(tune, pmt::mp("rf_freq_policy"))) {
+        std::string policy = pmt::symbol_to_string(
+            pmt::dict_ref(tune, pmt::mp("rf_freq_policy"), pmt::mp("A")));
+        if (policy == "M") {
+            new_tune_request.rf_freq_policy = ::uhd::tune_request_t::POLICY_MANUAL;
+        } else if (policy == "A") {
+            new_tune_request.rf_freq_policy = ::uhd::tune_request_t::POLICY_AUTO;
+        } else {
+            new_tune_request.rf_freq_policy = ::uhd::tune_request_t::POLICY_NONE;
+        }
+    }
+    if (pmt::dict_has_key(tune, pmt::mp("args"))) {
+        new_tune_request.args = ::uhd::device_addr_t(
+            pmt::symbol_to_string(pmt::dict_ref(tune, pmt::mp("args"), pmt::mp(""))));
+    }
+
+    _update_curr_tune_req(new_tune_request, chan);
 }
 
 void usrp_block_impl::_cmd_handler_bw(const pmt::pmt_t& bw,

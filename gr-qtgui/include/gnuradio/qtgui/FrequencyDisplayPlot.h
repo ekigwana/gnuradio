@@ -12,7 +12,7 @@
 #define FREQUENCY_DISPLAY_PLOT_HPP
 
 #include <gnuradio/qtgui/DisplayPlot.h>
-#include <stdint.h>
+#include <cstdint>
 #include <cstdio>
 #include <vector>
 
@@ -48,7 +48,7 @@ class FrequencyDisplayPlot : public DisplayPlot
 
 public:
     FrequencyDisplayPlot(int nplots, QWidget*);
-    virtual ~FrequencyDisplayPlot();
+    ~FrequencyDisplayPlot() override;
 
     void setFrequencyRange(const double,
                            const double,
@@ -72,9 +72,9 @@ public:
                      const double peakAmplitude,
                      const double timeInterval);
 
-    void replot();
+    void replot() override;
 
-    void setYaxis(double min, double max);
+    void setYaxis(double min, double max) override;
     double getYMin() const;
     double getYMax() const;
 

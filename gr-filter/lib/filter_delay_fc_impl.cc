@@ -20,7 +20,7 @@ namespace filter {
 
 filter_delay_fc::sptr filter_delay_fc::make(const std::vector<float>& taps)
 {
-    return gnuradio::get_initial_sptr(new filter_delay_fc_impl(taps));
+    return gnuradio::make_block_sptr<filter_delay_fc_impl>(taps);
 }
 
 filter_delay_fc_impl::filter_delay_fc_impl(const std::vector<float>& taps)
@@ -28,7 +28,7 @@ filter_delay_fc_impl::filter_delay_fc_impl(const std::vector<float>& taps)
                  io_signature::make(1, 2, sizeof(float)),
                  io_signature::make(1, 1, sizeof(gr_complex))),
       d_taps(taps),
-      d_fir(1, taps),
+      d_fir(taps),
       d_delay(d_fir.ntaps() / 2),
       d_update(false)
 {
@@ -37,8 +37,6 @@ filter_delay_fc_impl::filter_delay_fc_impl(const std::vector<float>& taps)
     const int alignment_multiple = volk_get_alignment() / sizeof(float);
     set_alignment(std::max(1, alignment_multiple));
 }
-
-filter_delay_fc_impl::~filter_delay_fc_impl() {}
 
 std::vector<float> filter_delay_fc_impl::taps() { return d_fir.taps(); }
 

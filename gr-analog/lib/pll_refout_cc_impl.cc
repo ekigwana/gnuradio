@@ -15,15 +15,14 @@
 #include "pll_refout_cc_impl.h"
 #include <gnuradio/io_signature.h>
 #include <gnuradio/sincos.h>
-#include <math.h>
+#include <cmath>
 
 namespace gr {
 namespace analog {
 
 pll_refout_cc::sptr pll_refout_cc::make(float loop_bw, float max_freq, float min_freq)
 {
-    return gnuradio::get_initial_sptr(
-        new pll_refout_cc_impl(loop_bw, max_freq, min_freq));
+    return gnuradio::make_block_sptr<pll_refout_cc_impl>(loop_bw, max_freq, min_freq);
 }
 
 pll_refout_cc_impl::pll_refout_cc_impl(float loop_bw, float max_freq, float min_freq)

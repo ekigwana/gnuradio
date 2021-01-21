@@ -10,8 +10,6 @@
 '''
 Filter blocks and related functions.
 '''
-from __future__ import absolute_import
-from __future__ import unicode_literals
 
 import os
 from gnuradio.fft import window
@@ -25,7 +23,6 @@ except ImportError:
 
 from .filterbank import *
 from .freq_xlating_fft_filter import *
-from .rational_resampler import *
 from . import pfb
 from . import optfir
 

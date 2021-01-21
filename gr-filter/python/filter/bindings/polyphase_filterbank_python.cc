@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(polyphase_filterbank.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(8651c06a82eb420afdb769759d3fa4bd)                     */
+/* BINDTOOL_HEADER_FILE_HASH(eddfa9a8852378220a937bc1e3bc7a39)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -39,12 +39,9 @@ void bind_polyphase_filterbank(py::module& m)
     py::class_<polyphase_filterbank, std::shared_ptr<polyphase_filterbank>>(
         m_kernel, "polyphase_filterbank", D(kernel, polyphase_filterbank))
 
-        .def(py::init<unsigned int,
-                      std::vector<float, std::allocator<float>> const&,
-                      bool>(),
+        .def(py::init<unsigned int, std::vector<float, std::allocator<float>> const&>(),
              py::arg("nfilts"),
              py::arg("taps"),
-             py::arg("fft_forward") = false,
              D(kernel, polyphase_filterbank, polyphase_filterbank, 0))
 
 

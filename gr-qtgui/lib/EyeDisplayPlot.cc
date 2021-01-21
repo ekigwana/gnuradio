@@ -50,7 +50,7 @@ public:
         setTrackerMode(QwtPicker::AlwaysOn);
     }
 
-    virtual ~EyeDisplayZoomer() {}
+    ~EyeDisplayZoomer() override {}
 
     virtual void updateTrackerText() { updateDisplay(); }
 
@@ -62,7 +62,7 @@ public:
 
 protected:
     using QwtPlotZoomer::trackerText;
-    virtual QwtText trackerText(const QPoint& p) const
+    QwtText trackerText(const QPoint& p) const override
     {
         QwtText t;
         QwtDoublePoint dp = QwtPlotZoomer::invTransform(p);
@@ -439,7 +439,7 @@ void EyeDisplayPlot::legendEntryChecked(const QVariant& plotItem, bool on, int i
 void EyeDisplayPlot::_resetXAxisPoints()
 {
     double delt = 1.0 / d_sample_rate;
-    for (long loc = 0; loc < d_numPointsPerPeriod; loc++) {
+    for (int64_t loc = 0; loc < d_numPointsPerPeriod; loc++) {
         d_xdata[loc] = delt * loc;
     }
 

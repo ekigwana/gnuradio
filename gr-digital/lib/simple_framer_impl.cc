@@ -15,7 +15,7 @@
 #include "simple_framer_impl.h"
 #include <gnuradio/digital/simple_framer_sync.h>
 #include <gnuradio/io_signature.h>
-#include <assert.h>
+#include <cassert>
 #include <string>
 
 namespace gr {
@@ -23,7 +23,7 @@ namespace digital {
 
 simple_framer::sptr simple_framer::make(int payload_bytesize)
 {
-    return gnuradio::get_initial_sptr(new simple_framer_impl(payload_bytesize));
+    return gnuradio::make_block_sptr<simple_framer_impl>(payload_bytesize);
 }
 
 simple_framer_impl::simple_framer_impl(int payload_bytesize)

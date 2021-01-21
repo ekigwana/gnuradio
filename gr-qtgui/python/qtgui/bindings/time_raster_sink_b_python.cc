@@ -54,7 +54,7 @@ void bind_time_raster_sink_b(py::module& m)
              py::arg("offset"),
              py::arg("name"),
              py::arg("nconnections") = 1,
-             py::arg("parent") = __null,
+             py::arg("parent") = nullptr,
              D(time_raster_sink_b, make))
 
 
@@ -75,6 +75,31 @@ void bind_time_raster_sink_b(py::module& m)
                 return PyLong_AsLongLong(p->pyqwidget());
             },
             D(time_raster_sink_b, pyqwidget))
+
+        .def("set_x_range",
+             &time_raster_sink_b::set_x_range,
+             py::arg("min"),
+             py::arg("max"),
+             D(time_raster_sink_b, set_x_range))
+
+
+        .def("set_x_label",
+             &time_raster_sink_b::set_x_label,
+             py::arg("label"),
+             D(time_raster_sink_b, set_x_label))
+
+
+        .def("set_y_range",
+             &time_raster_sink_b::set_y_range,
+             py::arg("min"),
+             py::arg("max"),
+             D(time_raster_sink_b, set_y_range))
+
+
+        .def("set_y_label",
+             &time_raster_sink_b::set_y_label,
+             py::arg("label"),
+             D(time_raster_sink_b, set_y_label))
 
 
         .def("set_update_time",

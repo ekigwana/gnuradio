@@ -14,14 +14,14 @@
 
 #include "delay_impl.h"
 #include <gnuradio/io_signature.h>
-#include <string.h>
+#include <cstring>
 
 namespace gr {
 namespace blocks {
 
 delay::sptr delay::make(size_t itemsize, int delay)
 {
-    return gnuradio::get_initial_sptr(new delay_impl(itemsize, delay));
+    return gnuradio::make_block_sptr<delay_impl>(itemsize, delay);
 }
 
 delay_impl::delay_impl(size_t itemsize, int delay)

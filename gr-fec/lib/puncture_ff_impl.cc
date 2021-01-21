@@ -15,9 +15,9 @@
 #include "puncture_ff_impl.h"
 #include <gnuradio/io_signature.h>
 #include <pmt/pmt.h>
-#include <stdio.h>
 #include <volk/volk.h>
 #include <boost/bind.hpp>
+#include <cstdio>
 #include <string>
 
 namespace gr {
@@ -25,7 +25,7 @@ namespace fec {
 
 puncture_ff::sptr puncture_ff::make(int puncsize, int puncpat, int delay)
 {
-    return gnuradio::get_initial_sptr(new puncture_ff_impl(puncsize, puncpat, delay));
+    return gnuradio::make_block_sptr<puncture_ff_impl>(puncsize, puncpat, delay);
 }
 
 puncture_ff_impl::puncture_ff_impl(int puncsize, int puncpat, int delay)

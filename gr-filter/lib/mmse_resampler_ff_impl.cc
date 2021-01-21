@@ -21,8 +21,7 @@ namespace filter {
 
 mmse_resampler_ff::sptr mmse_resampler_ff::make(float phase_shift, float resamp_ratio)
 {
-    return gnuradio::get_initial_sptr(
-        new mmse_resampler_ff_impl(phase_shift, resamp_ratio));
+    return gnuradio::make_block_sptr<mmse_resampler_ff_impl>(phase_shift, resamp_ratio);
 }
 
 mmse_resampler_ff_impl::mmse_resampler_ff_impl(float phase_shift, float resamp_ratio)
@@ -43,8 +42,6 @@ mmse_resampler_ff_impl::mmse_resampler_ff_impl(float phase_shift, float resamp_r
     set_msg_handler(pmt::intern("msg_in"),
                     [this](pmt::pmt_t msg) { this->handle_msg(msg); });
 }
-
-mmse_resampler_ff_impl::~mmse_resampler_ff_impl() {}
 
 void mmse_resampler_ff_impl::handle_msg(pmt::pmt_t msg)
 {

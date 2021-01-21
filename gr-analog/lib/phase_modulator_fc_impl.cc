@@ -15,14 +15,14 @@
 #include "phase_modulator_fc_impl.h"
 #include <gnuradio/io_signature.h>
 #include <gnuradio/sincos.h>
-#include <math.h>
+#include <cmath>
 
 namespace gr {
 namespace analog {
 
 phase_modulator_fc::sptr phase_modulator_fc::make(double sensitivity)
 {
-    return gnuradio::get_initial_sptr(new phase_modulator_fc_impl(sensitivity));
+    return gnuradio::make_block_sptr<phase_modulator_fc_impl>(sensitivity);
 }
 
 phase_modulator_fc_impl::phase_modulator_fc_impl(double sensitivity)

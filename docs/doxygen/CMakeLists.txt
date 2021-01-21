@@ -18,6 +18,13 @@ set(enable_html_docs YES)
 set(enable_latex_docs NO)
 set(enable_xml_docs YES)
 
+if(MATHJAX2_FOUND)
+  set(enable_mathjax YES)
+else()
+  message(WARNING "MathJax 2 not found, HTML equations might not be properly rendered.")
+  set(enable_mathjax NO)
+endif()
+
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
     ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
@@ -43,9 +50,9 @@ add_custom_command(
 add_custom_target(doxygen_target ALL DEPENDS ${BUILT_DIRS})
 
 if(ENABLE_DOXYGEN)
-    add_custom_command( 
+    add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gnuradio_docstrings.json
-    COMMAND python3 ${CMAKE_SOURCE_DIR}/docs/doxygen/update_pydoc.py "scrape"
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/docs/doxygen/update_pydoc.py "scrape"
     "--xml_path" ${CMAKE_BINARY_DIR}/docs/doxygen/xml
     "--json_path" ${CMAKE_CURRENT_BINARY_DIR}/gnuradio_docstrings.json
     COMMENT "Scraping generated documentation for docstrings ..."

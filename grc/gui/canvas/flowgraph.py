@@ -6,7 +6,6 @@ SPDX-License-Identifier: GPL-2.0-or-later
 
 """
 
-from __future__ import absolute_import
 
 import ast
 import functools
@@ -14,9 +13,7 @@ import random
 from distutils.spawn import find_executable
 from itertools import count
 
-import six
 from gi.repository import GLib, Gtk
-from six.moves import filter
 
 from . import colors
 from .drawable import Drawable
@@ -38,7 +35,7 @@ class _ContextMenu(object):
 
         # In GTK 3.22 Menu.popup was deprecated, we want to popup at the
         # pointer, so use that new function instead if we can.
-        if Gtk.check_version(3,22,0) is None:
+        if Gtk.check_version(3, 22, 0) is None:
             self.popup = self._menu.popup_at_pointer
 
     def popup(self, event):
@@ -283,7 +280,7 @@ class FlowGraph(CoreFlowgraph, Drawable):
 
             block.move((x_off, y_off))
             while any(Utils.align_to_grid(block.coordinate) == Utils.align_to_grid(other.coordinate)
-                   for other in self.blocks if other is not block):
+                      for other in self.blocks if other is not block):
                 block.move((Constants.CANVAS_GRID_SIZE, Constants.CANVAS_GRID_SIZE))
                 # shift all following blocks
                 x_off += Constants.CANVAS_GRID_SIZE
@@ -487,7 +484,7 @@ class FlowGraph(CoreFlowgraph, Drawable):
         #TODO - this is a workaround for bus ports not having a proper coordinate
         # until the shape is drawn.  The workaround is to draw blocks before connections
 
-        for element in filter(lambda x: x.is_block, self._elements_to_draw) :
+        for element in filter(lambda x: x.is_block, self._elements_to_draw):
             element.create_shapes()
 
         for element in filter(lambda x: not x.is_block, self._elements_to_draw):
@@ -496,6 +493,7 @@ class FlowGraph(CoreFlowgraph, Drawable):
     def _drawables(self):
         # todo: cache that
         show_comments = Actions.TOGGLE_SHOW_BLOCK_COMMENTS.get_active()
+        hide_disabled_blocks = Actions.TOGGLE_HIDE_DISABLED_BLOCKS.get_active()
         for element in self._elements_to_draw:
             if element.is_block and show_comments and element.enabled:
                 yield element.draw_comment
@@ -505,7 +503,8 @@ class FlowGraph(CoreFlowgraph, Drawable):
             if element not in self.selected_elements:
                 yield element.draw
         for element in self.selected_elements:
-            yield element.draw
+            if element.enabled or not hide_disabled_blocks:
+                yield element.draw
 
     def draw(self, cr):
         """Draw blocks connections comment and select rectangle"""

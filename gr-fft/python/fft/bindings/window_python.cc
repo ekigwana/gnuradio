@@ -13,8 +13,8 @@
 /* If manual edits are made, the following tags should be modified accordingly.    */
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
-/* BINDTOOL_HEADER_FILE(window.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(a2896456164142169fe7717e5f6570fc)                     */
+/* BINDTOOL_HEADER_FILE(window.h)                                                  */
+/* BINDTOOL_HEADER_FILE_HASH(22de6d8875628eec777952b4902a09e9)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -31,10 +31,23 @@ void bind_window(py::module& m)
 {
     using window = gr::fft::window;
 
+    py::class_<window, std::shared_ptr<window>> window_class(m, "window", D(window));
 
-    py::class_<window, std::shared_ptr<window>>(m, "window", D(window))
+    py::enum_<gr::fft::window::win_type>(window_class, "win_type")
+        .value("WIN_HAMMING", gr::fft::window::WIN_HAMMING)                 // 0
+        .value("WIN_HANN", gr::fft::window::WIN_HANN)                       // 1
+        .value("WIN_BLACKMAN", gr::fft::window::WIN_BLACKMAN)               // 2
+        .value("WIN_RECTANGULAR", gr::fft::window::WIN_RECTANGULAR)         // 3
+        .value("WIN_KAISER", gr::fft::window::WIN_KAISER)                   // 4
+        .value("WIN_BLACKMAN_hARRIS", gr::fft::window::WIN_BLACKMAN_hARRIS) // 5
+        .value("WIN_BLACKMAN_HARRIS", gr::fft::window::WIN_BLACKMAN_HARRIS) // 5
+        .value("WIN_BARTLETT", gr::fft::window::WIN_BARTLETT)               // 6
+        .value("WIN_FLATTOP", gr::fft::window::WIN_FLATTOP)                 // 7
+        .export_values();
 
+    py::implicitly_convertible<int, gr::fft::window::win_type>();
 
+    window_class
         .def_static("max_attenuation",
                     &window::max_attenuation,
                     py::arg("type"),
@@ -175,21 +188,9 @@ void bind_window(py::module& m)
                     &window::build,
                     py::arg("type"),
                     py::arg("ntaps"),
-                    py::arg("beta"),
+                    py::arg("beta") = 6.76,
+                    py::arg("normalize") = false,
                     D(window, build))
 
         ;
-
-
-    py::enum_<gr::fft::window::win_type>(m, "win_type")
-        .value("WIN_HAMMING", gr::fft::window::WIN_HAMMING)                 // 0
-        .value("WIN_HANN", gr::fft::window::WIN_HANN)                       // 1
-        .value("WIN_BLACKMAN", gr::fft::window::WIN_BLACKMAN)               // 2
-        .value("WIN_RECTANGULAR", gr::fft::window::WIN_RECTANGULAR)         // 3
-        .value("WIN_KAISER", gr::fft::window::WIN_KAISER)                   // 4
-        .value("WIN_BLACKMAN_hARRIS", gr::fft::window::WIN_BLACKMAN_hARRIS) // 5
-        .value("WIN_BLACKMAN_HARRIS", gr::fft::window::WIN_BLACKMAN_HARRIS) // 5
-        .value("WIN_BARTLETT", gr::fft::window::WIN_BARTLETT)               // 6
-        .value("WIN_FLATTOP", gr::fft::window::WIN_FLATTOP)                 // 7
-        .export_values();
 }
